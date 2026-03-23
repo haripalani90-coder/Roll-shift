@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataShift — Your Career Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --border: #2a2a3d;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --accent3: #f59e0b;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orb */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .logo-block h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+  }
+
+  .logo-block p {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Notification toggle */
+  .notif-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .notif-btn:hover { border-color: var(--accent); color: var(--text); }
+  .notif-btn.active { border-color: var(--success); color: var(--success); background: rgba(16,185,129,0.08); }
+  .notif-btn .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.2s;
+  }
+  .notif-btn.active .dot { background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Progress bar */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .progress-info { flex: 1; min-width: 200px; }
+  .progress-info h3 { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .progress-info .big-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--accent2);
+    line-height: 1;
+  }
+  .progress-info .big-num span { font-size: 1.2rem; color: var(--muted); }
+
+  .progress-bar-wrap { flex: 2; min-width: 220px; }
+  .progress-bar-wrap label { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 8px; }
+  .progress-bar-bg {
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  }
+  .progress-bar-wrap .sub { font-size: 0.7rem; color: var(--muted); margin-top: 6px; }
+
+  /* Timer reminder */
+  .reminder-box {
+    background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(6,182,212,0.08));
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .reminder-box .icon { font-size: 1.6rem; flex-shrink: 0; }
+  .reminder-box-content { flex: 1; min-width: 180px; }
+  .reminder-box-content h4 { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+  .reminder-box-content p { font-size: 0.75rem; color: var(--muted); }
+  .reminder-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+  .reminder-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 7px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .reminder-btn:hover, .reminder-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* Week cards */
+  .weeks-grid { display: flex; flex-direction: column; gap: 16px; }
+
+  .week-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .week-card:hover { border-color: rgba(124,58,237,0.4); transform: translateY(-1px); }
+  .week-card.current { border-color: var(--accent2); box-shadow: 0 0 24px rgba(6,182,212,0.1); }
+  .week-card.completed { border-color: rgba(16,185,129,0.3); opacity: 0.8; }
+
+  .week-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 22px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .week-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .badge-sql { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-excel { background: rgba(16,185,129,0.12); color: var(--success); border: 1px solid rgba(16,185,129,0.25); }
+  .badge-pbi { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+  .badge-python { background: rgba(6,182,212,0.12); color: var(--accent2); border: 1px solid rgba(6,182,212,0.25); }
+  .badge-portfolio { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+  .badge-job { background: rgba(236,72,153,0.12); color: #f472b6; border: 1px solid rgba(236,72,153,0.25); }
+
+  .week-title-block { flex: 1; }
+  .week-title-block h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+  .week-title-block span { font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; }
+
+  .week-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .status-ring {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+  .status-ring.done { border-color: var(--success); background: rgba(16,185,129,0.1); }
+  .status-ring.active { border-color: var(--accent2); background: rgba(6,182,212,0.1); animation: ring-pulse 2s infinite; }
+
+  @keyframes ring-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(6,182,212,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(6,182,212,0); }
+  }
+
+  .chevron { font-size: 0.7rem; color: var(--muted); transition: transform 0.2s; }
+  .week-card.open .chevron { transform: rotate(180deg); }
+
+  /* Topics list */
+  .week-body {
+    display: none;
+    padding: 0 22px 20px;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+  }
+  .week-card.open .week-body { display: block; }
+
+  .topics-list { padding-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+  .topic-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .topic-item:hover { border-color: var(--border); }
+  .topic-item.checked { background: rgba(16,185,129,0.06); border-color: rgba(16,185,129,0.2); }
+
+  .topic-check {
+    width: 20px; height: 20px; border-radius: 5px;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 0.65rem;
+  }
+  .topic-item.checked .topic-check { background: var(--success); border-color: var(--success); }
+  .topic-label { font-size: 0.82rem; flex: 1; }
+  .topic-item.checked .topic-label { text-decoration: line-through; color: var(--muted); }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 0.8rem;
+    z-index: 1000;
+    transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    white-space: nowrap;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Timer display */
+  #timer-display {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent2);
+    min-width: 60px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    .logo-block h1 { font-size: 1.8rem; }
+    .progress-section { flex-direction: column; gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo-block">
+      <h1>DataShift</h1>
+      <p>Career Transition Tracker · 12-Week Program</p>
+    </div>
+    <button class="notif-btn" id="notifBtn" onclick="toggleNotifications()">
+      <div class="dot"></div>
+      <span id="notifLabel">Enable Reminders</span>
+    </button>
+  </header>
+
+  <!-- Progress -->
+  <div class="progress-section">
+    <div class="progress-info">
+      <h3>Topics Done</h3>
+      <div class="big-num"><span id="doneCount">0</span><span> / <span id="totalCount">18</span></span></div>
+    </div>
+    <div class="progress-bar-wrap">
+      <label>Overall Progress</label>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="sub" id="progressSub">Keep going — you've got this 🚀</div>
+    </div>
+  </div>
+
+  <!-- Reminder box -->
+  <div class="reminder-box">
+    <div class="icon">⏰</div>
+    <div class="reminder-box-content">
+      <h4>Daily Study Reminder</h4>
+      <p>Set a repeat timer. Browser will notify you when it's time to study.</p>
+    </div>
+    <div class="reminder-controls">
+      <button class="reminder-btn" onclick="setTimer(30)">30 min</button>
+      <button class="reminder-btn" onclick="setTimer(60)">1 hr</button>
+      <button class="reminder-btn" onclick="setTimer(120)">2 hr</button>
+      <button class="reminder-btn" onclick="setTimer(0)">Off</button>
+      <span id="timer-display"></span>
+    </div>
+  </div>
+
+  <!-- Weeks -->
+  <div class="weeks-grid" id="weeksGrid"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const roadmap = [
+  {
+    weeks: "Week 1–2",
+    title: "SQL Deep Dive",
+    badge: "SQL",
+    badgeClass: "badge-sql",
+    topics: ["Window functions", "CTEs & Subqueries", "Practice on Mode Analytics"]
+  },
+  {
+    weeks: "Week 3–4",
+    title: "Excel + Statistics",
+    badge: "EXCEL",
+    badgeClass: "badge-excel",
+    topics: ["Pivot tables", "Power Query", "StatQuest videos"]
+  },
+  {
+    weeks: "Week 5–6",
+    title: "Power BI Advanced",
+    badge: "POWER BI",
+    badgeClass: "badge-pbi",
+    topics: ["DAX formulas", "Data modelling", "Build dashboard #1"]
+  },
+  {
+    weeks: "Week 7–8",
+    title: "Python Basics",
+    badge: "PYTHON",
+    badgeClass: "badge-python",
+    topics: ["Pandas & Matplotlib", "Clean a dataset", "Kaggle notebook"]
+  },
+  {
+    weeks: "Week 9–10",
+    title: "Portfolio Project",
+    badge: "PROJECT",
+    badgeClass: "badge-portfolio",
+    topics: ["End-to-end analysis", "SQL + PBI + story", "Push to GitHub"]
+  },
+  {
+    weeks: "Week 11–12",
+    title: "Job Prep",
+    badge: "CAREER",
+    badgeClass: "badge-job",
+    topics: ["Resume rewrite", "Mock interviews", "Apply to 10+ roles"]
+  }
+];
+
+// State
+let checked = JSON.parse(localStorage.getItem('ds_checked') || '{}');
+let currentWeek = parseInt(localStorage.getItem('ds_currentWeek') || '0');
+let notifEnabled = false;
+let timerInterval = null;
+let timerEnd = null;
+let activeTimerMinutes = 0;
+
+function saveChecked() {
+  localStorage.setItem('ds_checked', JSON.stringify(checked));
+}
+
+function buildCards() {
+  const grid = document.getElementById('weeksGrid');
+  grid.innerHTML = '';
+  let totalTopics = 0, doneTopics = 0;
+
+  roadmap.forEach((week, wi) => {
+    const isOpen = wi === 0;
+    const weekChecked = checked[wi] || {};
+    const topicsDone = week.topics.filter((_, ti) => weekChecked[ti]).length;
+    const allDone = topicsDone === week.topics.length;
+    const isCurrent = wi === currentWeek;
+
+    totalTopics += week.topics.length;
+    doneTopics += topicsDone;
+
+    const card = document.createElement('div');
+    card.className = `week-card${isOpen ? ' open' : ''}${allDone ? ' completed' : ''}${isCurrent ? ' current' : ''}`;
+    card.dataset.wi = wi;
+
+    const statusIcon = allDone ? '✓' : isCurrent ? '▶' : '';
+    const statusClass = allDone ? 'done' : isCurrent ? 'active' : '';
+
+    card.innerHTML = `
+      <div class="week-header" onclick="toggleCard(${wi})">
+        <span class="week-badge ${week.badgeClass}">${week.badge}</span>
+        <div class="week-title-block">
+          <h3>${week.title}</h3>
+          <span>${week.weeks} · ${topicsDone}/${week.topics.length} done</span>
+        </div>
+        <div class="week-status">
+          <div class="status-ring ${statusClass}">${statusIcon}</div>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="week-body">
+        <div class="topics-list">
+          ${week.topics.map((t, ti) => `
+            <div class="topic-item${weekChecked[ti] ? ' checked' : ''}" onclick="toggleTopic(${wi}, ${ti})">
+              <div class="topic-check">${weekChecked[ti] ? '✓' : ''}</div>
+              <span class="topic-label">${t}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Progress
+  document.getElementById('doneCount').textContent = doneTopics;
+  document.getElementById('totalCount').textContent = totalTopics;
+  const pct = Math.round((doneTopics / totalTopics) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  const msgs = [
+    "Keep going — you've got this 🚀",
+    "Great start! Stay consistent 💪",
+    "Almost halfway — momentum is key! ⚡",
+    "Halfway there, crushing it! 🔥",
+    "More than halfway — keep pushing! 📊",
+    "Almost done — final stretch! 🎯",
+    "100%! Time to land that role! 🎉"
+  ];
+  const idx = Math.min(Math.floor(pct / 17), 6);
+  document.getElementById('progressSub').textContent = msgs[idx];
+}
+
+function toggleCard(wi) {
+  const card = document.querySelector(`.week-card[data-wi="${wi}"]`);
+  card.classList.toggle('open');
+}
+
+function toggleTopic(wi, ti) {
+  if (!checked[wi]) checked[wi] = {};
+  checked[wi][ti] = !checked[wi][ti];
+  saveChecked();
+  buildCards();
+  
+  // Auto advance current week
+  const weekChecked = checked[wi] || {};
+  const allDone = roadmap[wi].topics.every((_, i) => weekChecked[i]);
+  if (allDone && wi === currentWeek && currentWeek < roadmap.length - 1) {
+    currentWeek++;
+    localStorage.setItem('ds_currentWeek', currentWeek);
+    showToast(`✅ Week ${wi + 1}–${wi + 2} complete! Moving to next phase.`);
+  }
+}
+
+// Notifications
+async function toggleNotifications() {
+  if (!('Notification' in window)) {
+    showToast('⚠️ This browser does not support notifications.');
+    return;
+  }
+  
+  if (notifEnabled) {
+    notifEnabled = false;
+    document.getElementById('notifBtn').classList.remove('active');
+    document.getElementById('notifLabel').textContent = 'Enable Reminders';
+    showToast('🔕 Reminders disabled.');
+    return;
+  }
+
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    notifEnabled = true;
+    document.getElementById('notifBtn').classList.add('active');
+    document.getElementById('notifLabel').textContent = 'Reminders ON';
+    showToast('🔔 Reminders enabled!');
+    sendNotif('DataShift Reminders Active', "We'll ping you when it's study time! 📚");
+  } else {
+    showToast('❌ Permission denied. Allow notifications in browser settings.');
+  }
+}
+
+function sendNotif(title, body) {
+  if (!notifEnabled || Notification.permission !== 'granted') return;
+  new Notification(title, {
+    body,
+    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📊</text></svg>'
+  });
+}
+
+// Timer
+function setTimer(minutes) {
+  document.querySelectorAll('.reminder-btn').forEach(b => b.classList.remove('active'));
+  
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  document.getElementById('timer-display').textContent = '';
+
+  if (minutes === 0) {
+    activeTimerMinutes = 0;
+    showToast('⏰ Timer cleared.');
+    return;
+  }
+
+  event.target.classList.add('active');
+  activeTimerMinutes = minutes;
+  timerEnd = Date.now() + minutes * 60 * 1000;
+  updateTimerDisplay();
+  timerInterval = setInterval(updateTimerDisplay, 1000);
+  showToast(`⏰ Study timer set for ${minutes} min — stay focused!`);
+}
+
+function updateTimerDisplay() {
+  if (!timerEnd) return;
+  const left = Math.max(0, timerEnd - Date.now());
+  const m = Math.floor(left / 60000);
+  const s = Math.floor((left % 60000) / 1000);
+  document.getElementById('timer-display').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  
+  if (left <= 0) {
+    clearInterval(timerInterval);
+    const week = roadmap[currentWeek];
+    sendNotif('⏰ Study Time!', `Time to work on: ${week.title} — ${week.weeks}`);
+    showToast('⏰ Time\'s up! Open DataShift and get studying.');
+    // Reset timer
+    timerEnd = Date.now() + activeTimerMinutes * 60 * 1000;
+    timerInterval = setInterval(updateTimerDisplay, 1000);
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// Daily reminder at 9am check
+function checkDailyReminder() {
+  const now = new Date();
+  const lastRemind = localStorage.getItem('ds_lastRemind');
+  const today = now.toDateString();
+  if (lastRemind !== today && now.getHours() >= 9) {
+    localStorage.setItem('ds_lastRemind', today);
+    const week = roadmap[currentWeek];
+    setTimeout(() => {
+      sendNotif('📚 Daily Study Reminder', `Today: ${week.title} · ${week.weeks}`);
+    }, 2000);
+  }
+}
+
+// Init
+buildCards();
+checkDailyReminder();
+
+// Open current week by default
+setTimeout(() => {
+  const currentCard = document.querySelector(`.week-card[data-wi="${currentWeek}"]`);
+  if (currentCard && !currentCard.classList.contains('open')) {
+    currentCard.classList.add('open');
+    currentCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}, 100);
+</script>
+</body>
+</html>
